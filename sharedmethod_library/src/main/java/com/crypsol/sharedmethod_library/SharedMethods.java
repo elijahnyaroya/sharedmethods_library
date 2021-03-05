@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,19 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.crypsol.sessionmanager_library.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +45,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+
 public class SharedMethods {
+    private static Context context;
+    private static int editTextstyling;
+    private static int btnSubmit;
+    private static int btnCancel;
+    private static int messageDialog;
+    private static int alertDialogMessageToDeveloper;
+    private  static  Class dashboardClass;
+    public  SharedMethods (Context context,int editTextstyling,int btnSubmit,int btnCancel,int messageDialog,int alertDialogMessageToDeveloper,Class dashboardClass){
+        this.context = context;
+        this.editTextstyling = editTextstyling;
+        this.btnSubmit = btnSubmit;
+        this.btnCancel = btnCancel;
+        this.messageDialog = messageDialog;
+        this.alertDialogMessageToDeveloper = alertDialogMessageToDeveloper;
+        this.dashboardClass = dashboardClass;
+    }
+
     static class QueueAppStringData{
         String result,description;
         public   QueueAppStringData(String rest,String desc){
@@ -44,7 +76,7 @@ public class SharedMethods {
 
     static String prefix = "";
     static String nsnString = "";
-    static HashMap hashMap = new HashMap();
+    static  HashMap hashMap = new HashMap();
 
     public static boolean TOAST = true; // Default is to print. We will set this from INTRO point (ShowWheelExpand)
     public static boolean SOP = true; // Default is to toast. We will set this from INTRO point (ShowWheelExpand)
@@ -188,7 +220,7 @@ public class SharedMethods {
     }
 
 
-    public static void showUserOptionToSelectFromAfetrShaking( final String dashBoardID,  final String showID,  final String imagpathpass,  final String imagepass,final Context context, final String ActivityFrom) {
+    public static void showUserOptionToSelectFromAfetrShaking( final String dashBoardID,  final String showID,  final String imagpathpass,  final String imagepass,final Context context, final String ActivityFrom,final int messagetodeveloper_alert) {
         class MyInteger {
             int myInt;
 
@@ -207,14 +239,15 @@ public class SharedMethods {
         int checkedItem = 0;
         final AlertDialog.Builder mBuilder;
         mBuilder = new AlertDialog.Builder(context);
-        mBuilder.setTitle(context.getResources().getString(R.string.whatyouwanttodo));
+        //mBuilder.setTitle(context.getResources().getString(R.string.whatyouwanttodo));
+        mBuilder.setTitle(SharedMethods.strLu("Ishm006 settings Alertdialog","What do you want to do?","Title for app setting alert dialog"));
         mBuilder.setSingleChoiceItems(actionsToTake, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mymy.set(which);
             }
-        }).setNegativeButton(context.getResources().getString(R.string.label_cancel), null)
-                .setPositiveButton(context.getResources().getString(R.string.ok), new
+        }).setNegativeButton(SharedMethods.strLu("Ishm007 cancel","Cancel","This is the cancel button when the user found themselves on error reporting alert dialog box"), null)
+                .setPositiveButton(SharedMethods.strLu("Ishm008 Ok","Ok","This is the button that the user will click after they have selected specific setting they want to change, for example report error and so on"), new
                         DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -229,7 +262,7 @@ public class SharedMethods {
                                         reportError(dashBoardID, showID,  imagpathpass,  imagepass,ActivityFrom, context, "General error reporting");
                                         break;
                                     case 2:
-                                        reportSendDeveloperMessage(ActivityFrom, context, "Message To developer");
+                                        reportSendDeveloperMessage(ActivityFrom, context, "Message To developer",messagetodeveloper_alert);
                                         break;
                                     default:
                                         break;
@@ -251,7 +284,7 @@ public class SharedMethods {
      * @param typeOfReporting
      */
     public static void reportError(final String dashBoardID,  final String showID,  final String imagpathpass,  final String imagepass,final String activityfrom, final Context context,final String typeOfReporting) {
-        if(TOAST) Toast.makeText(context, activityfrom + ":\r\n" + typeOfReporting, Toast.LENGTH_LONG).show();
+        if(TOAST)Toast.makeText(context, activityfrom + ":\r\n" + typeOfReporting, Toast.LENGTH_LONG).show();
         // TODO 212 Implementing error reporting, here we will also store back to the database, such that we have a chance, from a central position
         //  to log and find errors occurring on all devices, for us to capture problems early.
         // TODO 235 We will create a central repository of these errors, where we will number them, and feed back
@@ -330,16 +363,21 @@ public class SharedMethods {
      * @param context
      * @param typeOfReporting
      */
-    public static void reportSendDeveloperMessage(final String activityfrom, final Context context, final String typeOfReporting) {
+/*    public static void reportSendDeveloperMessage(final String activityfrom, final Context context, final String typeOfReporting,final int messagetodeveloper_alert) {
         if(SOP)System.out.println("SharedMethod.java reportSendDeveloperMessage() (W) "+typeOfReporting);
         final AlertDialog dialogBuilder = new AlertDialog.Builder(context).create();
         LayoutInflater inflater = LayoutInflater.from(context);
-        final View dialogView = inflater.inflate(R.layout.messagetodeveloper_alert, null);
+        final View dialogView = inflater.inflate(messagetodeveloper_alert, null);
 
         final EditText message = (EditText) dialogView.findViewById(R.id.message);
+        final TextView textViewMessagetodeveloper = (TextView) dialogView.findViewById(R.id.textViewMessagetodeveloper);
+        textViewMessagetodeveloper.setText(SharedMethods.strLu("Ishm022 message to developer","Send Message To Developer","This is the title that will be displayed on the alertDialog box. This happens when the users are typing message to the developer"));
+        message.setHint(SharedMethods.strLu("Ishm023 hint message to developer","Please enter your message","This is the hint text to Edittext (Messaging developer)"));
         Button btnSubmit = (Button) dialogView.findViewById(R.id.btnSubmit);
+        btnSubmit.setText(SharedMethods.strLu("Ishm024 button submit","Submit","Text to be displayed on submit button to developer alert dialog"));
+;
         final Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
-
+        btnCancel.setText(SharedMethods.strLu("Ishm025 button cancel","Cancel","Text to be displayed on cancel button to developer alert dialog"));
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -349,12 +387,62 @@ public class SharedMethods {
                 }else{
                     //dialogView.setVisibility(View.GONE);
                     dialogBuilder.cancel();
-                    sendReportToTheDatabase(messagetosent, context, activityfrom, typeOfReporting);
+                    sendReportToTheDatabase(messagetosent, context, activityfrom, typeOfReporting,messagetodeveloper_alert);
                     if(SOP)System.out.println("SharedMethod.java reportSendDeveloperMessage() (W1) "+typeOfReporting+" Message "+messagetosent);
                 }
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogBuilder.dismiss();
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }*/
+
+    public static void reportSendDeveloperMessage(final String activityfrom, final Context context, final String typeOfReporting,final int messagetodeveloper_alert) {
+        if(SOP)System.out.println("SharedMethod.java reportSendDeveloperMessage() (W) "+typeOfReporting);
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(context).create();
+        LayoutInflater inflater = LayoutInflater.from(context);
+        final View dialogView = inflater.inflate(messagetodeveloper_alert, null);
+
+        final EditText message = (EditText) dialogView.findViewById(messageDialog);
+        final TextView textViewMessagetodeveloper = (TextView) dialogView.findViewById(alertDialogMessageToDeveloper);
+
+        // textViewMessagetodeveloper.setText(SharedMethods.strLu("Ishm022 message to developer","Send Message To Developer","This is the title that will be displayed on the alertDialog box. This happens when the users are typing message to the developer"));
+        //message.setHint(SharedMethods.strLu("Ishm023 hint message to developer","Please enter your message","This is the hint text to Edittext (Messaging developer)"));
+        Button btnSubmit2 = (Button) dialogView.findViewById(btnSubmit);
+        // btnSubmit2.setText(SharedMethods.strLu("Ishm024 button submit","Submit","Text to be displayed on submit button to developer alert dialog"));
+        ;
+        final Button btnCancel2 = (Button) dialogView.findViewById(btnCancel);
+        try {
+            btnCancel2.setText(SessionManager.getAppString().getString("Ishm025 button cancel"));
+            btnSubmit2.setText(SessionManager.getAppString().getString("Ishm024 button submit"));
+            textViewMessagetodeveloper.setText(SessionManager.getAppString().getString("Ishm022 message to developer"));
+        } catch (JSONException e) {
+            //System.out.println("Error displaying APPSTRING "+SessionManager.getAppString().getString("Ishm025 button cancel"));
+            System.out.println("Error displaying or setting text message");
+            e.printStackTrace();
+        }
+        //btnCancel2.setText(SharedMethods.strLu("Ishm025 button cancel","Cancel","Text to be displayed on cancel button to developer alert dialog"));
+        btnSubmit2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String messagetosent = message.getText().toString().trim();
+                if (messagetosent.equals("") || messagetosent.length() < 5) {
+                    if(TOAST)Toast.makeText(context, SharedMethods.strLu("Mshm015 message","message ","This the message toast to the user if the message they are sending to developers is empty.") + messagetosent, Toast.LENGTH_SHORT).show();
+                }else{
+                    //dialogView.setVisibility(View.GONE);
+                    dialogBuilder.cancel();
+                    sendReportToTheDatabase(messagetosent, context, activityfrom, typeOfReporting,messagetodeveloper_alert);
+                    if(SOP)System.out.println("SharedMethod.java reportSendDeveloperMessage() (W1) "+typeOfReporting+" Message "+messagetosent);
+                }
+            }
+        });
+        btnCancel2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialogBuilder.dismiss();
@@ -371,14 +459,14 @@ public class SharedMethods {
     }
 
 
-    public static void sendReportToTheDatabase(final String messagetosent, final Context context, final String activityfrom, final String typeOfReporting) {
+    public static void sendReportToTheDatabase(final String messagetosent, final Context context, final String activityfrom, final String typeOfReporting,final int messagetodeveloper_alert) {
         //Toast.makeText(context, "RRRRRRRR ", Toast.LENGTH_SHORT).show();
         RequestQueue mRequestQueue;
         mRequestQueue = Volley.newRequestQueue(context);
         String url = "reportingissues.php";
 
         StringRequest requestingServer = new StringRequest(
-                Request.Method.POST, URL_POINTER + url,
+                Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -393,7 +481,7 @@ public class SharedMethods {
                                     final AlertDialog.Builder mBuilder;
                                     mBuilder = new AlertDialog.Builder(context);
                                     mBuilder.setMessage(object.getString("message"))
-                                            .setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(SharedMethods.strLu("Ishm009 Ok","Ok","This is the button that the users will click when they are sending a message to the developers"), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //context.startActivity(new Intent(context, context.getClass()));
@@ -406,7 +494,7 @@ public class SharedMethods {
                                     AlertDialog.Builder mBuilder;
                                     mBuilder = new AlertDialog.Builder(context);
                                     mBuilder.setMessage(object.getString("message"))
-                                            .setPositiveButton(SharedMethods.strLu("Isha001 positive button", "OK", "This is the button that will be clicked if the error repoting is succesful"), new DialogInterface.OnClickListener() {
+                                            .setPositiveButton(SharedMethods.strLu("Ishm001 positive button", "OK", "This is the button that will be clicked if the error repoting is succesful"), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //
@@ -436,7 +524,7 @@ public class SharedMethods {
             }*/@Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", context.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
                 params.put("messageToReport", messagetosent);
                 params.put("typeOfReporting", typeOfReporting);
                 params.put("activityFrom", activityfrom);
@@ -468,18 +556,20 @@ public class SharedMethods {
 
         // TODO test E Here we need to move the inner dialogue with Choose From Others (text hereunder R.string.selectcountrylanguage) such that we have one menu with languages,
         //  hereof the phone language and country as default at the top.
-        final String[] totalList = {combinationofLangandCountry, context.getResources().getString(R.string.selectcountrylanguage)};
+        //final String[] totalList = {combinationofLangandCountry, context.getResources().getString(R.string.selectcountrylanguage)};
+        final String[] totalList = {combinationofLangandCountry, SharedMethods.strLu("Ishm013 choice other languages","Choose from others","This is selection from the languages  from the languages coming from our database")};
         final boolean[] checkedItems = new boolean[totalList.length];
         AlertDialog.Builder mBuilder;
         mBuilder = new AlertDialog.Builder(context);
-        mBuilder.setTitle(context.getResources().getString(R.string.confirmCountryLangSelection));
+        //mBuilder.setTitle(context.getResources().getString(R.string.confirmCountryLangSelection));
+        mBuilder.setTitle(SharedMethods.strLu("Ishm003 confirm language selection","Choose Country and Language.","Title for confirming language selection"));
 
         mBuilder.setSingleChoiceItems(totalList, 2, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mymy.set(which);
             }
-        }).setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+        }).setPositiveButton(SharedMethods.strLu("Ishm010 Ok","OK","This is the button to be clicked by the users when they have selecte the language of their choice"), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 which = mymy.get();
@@ -511,13 +601,15 @@ public class SharedMethods {
         AlertDialog.Builder mBuilder;
         mBuilder = new AlertDialog.Builder(context);
         // TODO make this one single choice...
-        mBuilder.setTitle(context.getResources().getString(R.string.Select_country));
+        // mBuilder.setTitle(context.getResources().getString(R.string.Select_country));
+        mBuilder.setTitle(SharedMethods.strLu("Ishm004 select country","Select country and language","Title on country and language alert dialog builder"));
         mBuilder.setMultiChoiceItems(country_lang_toselectFrom, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                 //
             }
-        }).setPositiveButton(context.getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+            //}).setPositiveButton(context.getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+        }).setPositiveButton(SharedMethods.strLu("Ishm014 confirm","Confirm","This is the button to be clicked when the user confirms their language selection"), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 for (int i = 0; i < checkedItems.length; i++) {
@@ -546,13 +638,14 @@ public class SharedMethods {
         final boolean[] checkedItems = new boolean[currency_country.length];
         AlertDialog.Builder mBuilder;
         mBuilder = new AlertDialog.Builder(context);
-        mBuilder.setTitle(context.getResources().getString(R.string.selectCurrency));
+        //mBuilder.setTitle(context.getResources().getString(R.string.selectCurrency));
+        mBuilder.setTitle(SharedMethods.strLu("Ishm005 select currency","Select your currency","Title for currency selection alert dialog"));
         mBuilder.setMultiChoiceItems(currency_country, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                 //
             }
-        }).setPositiveButton(context.getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+        }).setPositiveButton(SharedMethods.strLu("Ishm015 confirm","Confirm","This is the button to be clicked when the user confirms their country of residence"), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 for (int i = 0; i < checkedItems.length; i++) {
@@ -576,7 +669,7 @@ public class SharedMethods {
         if(SOP)System.out.println("SharedMethod registerUserLanguageandCountry()  currency -- "+currency);
         SessionManager.setMyISOCOUNTRY(isoCountry);
         SessionManager.setMyISOLANGUAGE(iso_lang);
-        StringRequest request = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -608,7 +701,7 @@ public class SharedMethods {
 
                                 mBuilder = new AlertDialog.Builder(context);
                                 mBuilder.setMessage(jsonObject.getString("message"))
-                                        .setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                        .setPositiveButton(SharedMethods.strLu("Ishm011 Ok","Ok","This is the button the user will click to confirm that their language setting has been registered in the database"), new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
@@ -638,7 +731,7 @@ public class SharedMethods {
             protected java.util.Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("IMEI_NUMBER", SessionManager.checkAndGenerateImei ());
-                params.put("appID", context.getResources().getString(R.string.app_name));
+                params.put("appID", SessionManager.getAPPNAME());
                 params.put("country", isoCountry);
                 params.put("language", lang);
                 params.put("iso_lang", iso_lang);
@@ -658,7 +751,7 @@ public class SharedMethods {
         final List<String> countryandlanguage = new ArrayList<String>();
 
         String url = "getcountryandlanguage.php";
-        StringRequest request = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
@@ -716,7 +809,7 @@ public class SharedMethods {
             }*/@Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", context.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
                 params.put("IMEI", SessionManager.checkAndGenerateImei());
                 SharedMethods.printParams("SharedMethods.java ==> getcountryandlanguage.php", params);
                 return params;
@@ -765,29 +858,32 @@ public class SharedMethods {
 //                        }
                         // TODO 232 Here we will one day insert display with a toast of the Country and Language
                     }
-                }).setNegativeButton(context.getResources().
-                        getString(R.string.label_cancel), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                which = mymy.get();
-                                if(SessionManager.getSOP()!="")System.out.println("SharedMethods.java : modalDialog() - CANCEL (" + which + ") picked = " + actionsToTake[which]);
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setPositiveButton(context.getResources().
-                        getString(R.string.ok), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                which = mymy.get();
-                                if(SessionManager.getSOP()!="")System.out.println("dashboard.java : modalDialog() - OK  (" + which + ") picked = " + actionsToTake[which]);
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setCancelable(false);
+                }).setNegativeButton(
+                        //context.getResources().getString(R.string.label_cancel),
+                        SharedMethods.strLu("Ishm017 cancel","Cancel","This is the negative button for Alertdialog for modalRadioDialog() in SharedMethod.java")
+                        ,
+                        new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        which = mymy.get();
+                                        if(SessionManager.getSOP()!="")System.out.println("SharedMethods.java : modalDialog() - CANCEL (" + which + ") picked = " + actionsToTake[which]);
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setPositiveButton(
+                        SharedMethods.strLu("Ishm018 Ok","Ok","This is the negative button for Alertdialog for modalRadioDialog() in SharedMethod.java"), new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        which = mymy.get();
+                                        if(SessionManager.getSOP()!="")System.out.println("dashboard.java : modalDialog() - OK  (" + which + ") picked = " + actionsToTake[which]);
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setCancelable(false);
                 Looper.prepare(); // TODO 800 check up on the looper problem occurring today 08 Nov 2020
                 mBuilder.create();
                 mBuilder.show();
@@ -847,26 +943,27 @@ public class SharedMethods {
                             e.printStackTrace();
                         }
                     }
-                }).setNegativeButton(context.getResources().
-                        getString(R.string.label_cancel), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mymy.clear();
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setPositiveButton(context.getResources().
-                        getString(R.string.ok), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setCancelable(false);
+                }).setNegativeButton(
+                        SharedMethods.strLu("Ishm019 cancel","Cancel","This is the negative button for Alertdialog for modalCheckDialog() in SharedMethod.java"),
+                        new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mymy.clear();
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setPositiveButton(
+                        SharedMethods.strLu("Ishm020 Ok","Ok","This is the negative button for Alertdialog for modalCheckDialog() in SharedMethod.java"), new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setCancelable(false);
                 Looper.prepare(); // TODO 800 check up on the looper problem occurring today 08 Nov 2020
                 mBuilder.create();
                 mBuilder.show();
@@ -914,26 +1011,26 @@ public class SharedMethods {
                         } else
                             mymy.reset(which);
                     }
-                }).setNegativeButton(context.getResources().
-                        getString(R.string.label_cancel), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mymy.clear();
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setPositiveButton(context.getResources().
-                        getString(R.string.ok), new
-                        DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                synchronized (mymy) {
-                                    mymy.notify();
-                                }
-                            }
-                        }).setCancelable(false);
+                }).setNegativeButton(
+                        SharedMethods.strLu("Ishm021 cancel","Cancel","This is the negative button for Alertdialog for modalCheck64Dialog() in SharedMethod.java"), new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mymy.clear();
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setPositiveButton(
+                        SharedMethods.strLu("Ishm022 Ok","Ok","This is the negative button for Alertdialog for modalCheck64Dialog() in SharedMethod.java"), new
+                                DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        synchronized (mymy) {
+                                            mymy.notify();
+                                        }
+                                    }
+                                }).setCancelable(false);
                 Looper.prepare(); // TODO 800 check up on the looper problem occurring today 08 Nov 2020
                 mBuilder.create();
                 mBuilder.show();
@@ -994,7 +1091,7 @@ public class SharedMethods {
     public static void getUserData(final Context context,RequestQueue requestQueue){
         final RequestQueue mRequestQueue = Volley.newRequestQueue(context);
         String url = "getUserdata.php";
-        StringRequest request = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
@@ -1036,7 +1133,7 @@ public class SharedMethods {
             }*/@Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", context.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
                 params.put("IMEI", SessionManager.checkAndGenerateImei());
                 params.put("phoneNumber", SessionManager.getPhone());
                 return params;
@@ -1059,7 +1156,7 @@ public class SharedMethods {
         AlertDialog.Builder mbuilder = new AlertDialog.Builder(context);
         mbuilder.setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(SharedMethods.strLu("Isha002 OK", "OK", "Text to be displayed on positive alertdialog button"), new DialogInterface.OnClickListener() {
+                .setPositiveButton(SharedMethods.strLu("Ishm002 OK", "OK", "Text to be displayed on positive alertdialog button"), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (intent != null) {
@@ -1098,13 +1195,13 @@ public class SharedMethods {
             int payoutamount = Integer.parseInt(SessionManager.getWithdrawableAmount());
             // TODO 801 - we need all hard coded figures to be database stored and properly documented.
             if (payoutamount < 10) {
-                widthdrawalAlert(context, SharedMethods.strLu("Isha023 error making withdrawal" , "You can not withdraw amount less than ", "Message displayed to the user if they are making withdrawal less than the minimum") + SessionManager.getCurrency() + " " + 10);
+                widthdrawalAlert(context, SharedMethods.strLu("Ishm023 error making withdrawal" , "You can not withdraw amount less than ", "Message displayed to the user if they are making withdrawal less than the minimum") + SessionManager.getCurrency() + " " + 10);
             } else {
                 //System.out.println("SharedMethod.java, makeWithdrawals() 1085 payoutFee "+SessionManager.getPayOutFee()+" ChargedRate"+SessionManager.getChargeRate()+" PayableAmount "+SessionManager.getPayableAmount()+" Phone "+SessionManager.getPhone()+" Currency "+SessionManager.getCurrency());
                 RequestForComissionPayOut(context, SessionManager.getPhone(), SessionManager.getCurrency(), SessionManager.getWithdrawableAmount());
             }
         } else {
-            widthdrawalAlert(context, SharedMethods.strLu("Isha024 error requesting payment", "You need to register before making withdrawals", " This is the error message displayed to the user if they want to make withdrawal without been registered "));
+            widthdrawalAlert(context, SharedMethods.strLu("Ishm024 error requesting payment", "You need to register before making withdrawals", " This is the error message displayed to the user if they want to make withdrawal without been registered "));
         }
 
     }
@@ -1132,8 +1229,8 @@ public class SharedMethods {
                     JSONObject phpMessage = response.getJSONObject(0);
                     JSONObject requestpayment = response.getJSONObject(1);
                     // TODO test G We need to check on the dashboard.class new intent, versus the finish(). We are renewing the intent without considering updating it's status instead.
-                    Intent intent = new Intent(context, dashboard.class);
-                    alertDialogWithIntent(context,SharedMethods.strLu("Isha025 Payment Request", "Payment Request", "This will be displayed to the users when they want to have their commission"), requestpayment.getString("message"), true, intent);
+                    Intent intent = new Intent(context, dashboardClass);
+                    alertDialogWithIntent(context,SharedMethods.strLu("Ishm025 Payment Request", "Payment Request", "This will be displayed to the users when they want to have their commission"), requestpayment.getString("message"), true, intent);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1152,7 +1249,7 @@ public class SharedMethods {
 
         try {
             JSONObject requestpayment = new JSONObject()
-                    .put("AppID", context.getResources().getString(R.string.app_name))
+                    .put("AppID", SessionManager.getAPPNAME())
                     .put("phone", phoneTrim)
                     .put("currency",currency )
                     .put("amunt",withdrawalAmount);
@@ -1163,6 +1260,7 @@ public class SharedMethods {
         }
         return response;
     }
+
 
 
     public static String modalTextFieldDialog(final Context context, final String title, final String textfieldHint, final String textView, final boolean acceptEmptyTextFormField) {
@@ -1198,14 +1296,16 @@ public class SharedMethods {
                 errorTextField.setMinLines(20);
                 errorTextField.setHeight(200);
                 errorTextField.setWidth(300);
-                errorTextField.setPadding(10, 3, 10, 3);
+                errorTextField.setPadding(10, 10, 10, 3);
                 errorTextField.setLeft(100);
                 errorTextField.setRight(100);
-                errorTextField.setBackgroundResource(R.drawable.edittextstyling);
+                errorTextField.setBackgroundResource(editTextstyling);
                 errorTextField.setHint(textfieldHint);
+                errorTextField.setGravity(Gravity.LEFT);
+                errorTextField.setGravity(Gravity.TOP);
                 mBuilder.setView(linearLayout);
 
-                mBuilder.setNegativeButton(context.getResources().getString(R.string.label_cancel), new
+                mBuilder.setNegativeButton(SharedMethods.strLu("Ishm016 cancel","Cancel","This the negative Cancel for the general modalTextFieldDialog() function in SharedMethod.java class"), new
                         DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -1214,7 +1314,7 @@ public class SharedMethods {
                                     mymy.notify();
                                 }
                             }
-                        }).setPositiveButton(context.getResources().getString(R.string.ok), new
+                        }).setPositiveButton(SharedMethods.strLu("Ishm012 Ok","Ok","This the positive button for the general modalTextFieldDialog() function in SharedMethod.java class "), new
                         DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -1299,7 +1399,7 @@ public class SharedMethods {
 
         try {
             requestpayment
-                    .put("appName", context.getResources().getString(R.string.app_name))
+                    .put("appName", SessionManager.getAPPNAME())
                     .put("phone", SessionManager.getPhone())
                     .put("currency", SessionManager.getCurrency() )
                     .put("dashBoardID", dashBoardID)
@@ -1371,7 +1471,7 @@ public class SharedMethods {
 
         try {
             requestpayment
-                    .put("AppID", context.getResources().getString(R.string.app_name))
+                    .put("AppID", SessionManager.getAPPNAME())
             ;
 
             genHttpJSONrequest.genericHttpcallBack (context, "appSettings.php", requestpayment, hpi);
@@ -1397,20 +1497,16 @@ public class SharedMethods {
         return SessionManager.getTOAST().equals("1");
     }
 
-    private static Context contextPassed = null;
 
-    public static void setStrLuQueue (Context toBeSet) {
-        contextPassed = toBeSet;
-    }
 
 
 
     public static String strLu(final String stringID, final String result, final String description){
 
         hashMap.put(stringID, new QueueAppStringData(result,description));
-        RequestQueue mRequestQueue = Volley.newRequestQueue(contextPassed);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(context);
         String url = "appString/sendAppStringData.php";
-        StringRequest request = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
@@ -1441,7 +1537,60 @@ public class SharedMethods {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", contextPassed.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
+                params.put("language", SessionManager.getMyISOLANGUAGE());
+                params.put("stringID",stringID);
+                params.put("result",result);
+                params.put("description",description);
+
+                System.out.println(context+" values "+params);
+                return params;
+            }
+        };
+
+        mRequestQueue.add(request);
+
+        return getAppStrings(context,stringID,result);
+    }
+
+    /*
+        public static String strLu(final String stringID, final String result, final String description){
+
+        hashMap.put(stringID, new QueueAppStringData(result,description));
+        RequestQueue mRequestQueue = Volley.newRequestQueue(contextPassed);
+        String url = "appString/sendAppStringData.php";
+        StringRequest request = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
+                new Response.Listener<String>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println("Response strLu() sharedMethods.java "+response);
+
+                        try {
+                            JSONArray responses = new JSONArray(response);
+                            JSONObject jsonObject = responses.getJSONObject(0);
+                            String result = jsonObject.getString("code");
+                            if (result.equals("success")){
+                                Iterator iterator = hashMap.entrySet().iterator();
+                                while (iterator.hasNext()) {
+                                    Map.Entry hashit = (Map.Entry) iterator.next();
+                                    if (hashit.getKey().equals(stringID)){
+                                        iterator.remove();
+                                    }
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                genericErrorHandler
+        ) {
+             @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("appName", SessionManager.getAPPNAME);
                 params.put("language", SessionManager.getMyISOLANGUAGE());
                 params.put("stringID",stringID);
                 params.put("result",result);
@@ -1453,11 +1602,11 @@ public class SharedMethods {
         };
 
         mRequestQueue.add(request);
-
-        return getAppStrings(contextPassed,stringID,result);
+       System.out.println("strLu result passed "+result);
+        return result;
     }
 
-
+     */
     public static void sendQueuedStringData(){
         Iterator iterator = hashMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -1473,7 +1622,7 @@ public class SharedMethods {
     public  static String getAppStrings(final Context xx,String stringID,String result)  {
         RequestQueue mRequestQueue = Volley.newRequestQueue(xx);
         String url = "appString/getAppString.php";
-        StringRequest request2 = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request2 = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
@@ -1502,7 +1651,7 @@ public class SharedMethods {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", xx.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
                 params.put("language", SessionManager.getMyISOLANGUAGE());
 
                 System.out.println(" parameters "+params);
@@ -1512,7 +1661,6 @@ public class SharedMethods {
 
         mRequestQueue.add(request2);
         try {
-            System.out.println("VALURRRRR "+ SessionManager.getAppString().getString(stringID));
             return  SessionManager.getAppString().getString(stringID);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1524,7 +1672,7 @@ public class SharedMethods {
     public  static void loadAppstringData(final Context xx)  {
         RequestQueue mRequestQueue = Volley.newRequestQueue(xx);
         String url = "appString/getAppString.php";
-        StringRequest request2 = new StringRequest(Request.Method.POST, URL_POINTER + url,
+        StringRequest request2 = new StringRequest(Request.Method.POST, SessionManager.getURL() + url,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
@@ -1566,7 +1714,7 @@ public class SharedMethods {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("appName", xx.getResources().getString(R.string.app_name));
+                params.put("appName", SessionManager.getAPPNAME());
                 params.put("language", SessionManager.getMyISOLANGUAGE());
 
                 System.out.println(" parameters "+params);
