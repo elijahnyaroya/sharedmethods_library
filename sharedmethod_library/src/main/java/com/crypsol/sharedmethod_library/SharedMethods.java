@@ -706,6 +706,7 @@ public class SharedMethods {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
                                                 Intent openclass = new Intent(context,dashboardClass);
+                                                context.startActivity(openclass);
                                                 //((Create3) context).onCreate3(); // This ought being the call back now to complete after language...
                                             }
                                         })
