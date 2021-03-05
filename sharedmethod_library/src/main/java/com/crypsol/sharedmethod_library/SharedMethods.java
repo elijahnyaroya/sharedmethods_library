@@ -705,7 +705,8 @@ public class SharedMethods {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
-                                                ((Create3) context).onCreate3(); // This ought being the call back now to complete after language...
+                                                Intent openclass = new Intent(context,dashboardClass);
+                                                //((Create3) context).onCreate3(); // This ought being the call back now to complete after language...
                                             }
                                         })
                                         .setCancelable(true)
