@@ -4,7 +4,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId "com.crypsol.sharedmethods_library"
+        applicationId "com.crypsol.SharedMethodss_library"
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 1

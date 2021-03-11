@@ -1,4 +1,4 @@
-package com.crypsol.sharedmethods_library;
+package com.crypsol.SharedMethodss_library;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.crypsol.sharedmethods_library", appContext.getPackageName());
+        assertEquals("com.crypsol.SharedMethodss_library", appContext.getPackageName());
     }
 }

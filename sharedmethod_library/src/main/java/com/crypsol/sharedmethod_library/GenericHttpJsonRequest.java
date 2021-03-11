@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+
 public class GenericHttpJsonRequest {
     private RequestQueue genericHttpRequestQueue;
     static boolean  TOAST = SharedMethods.TOAST();
@@ -39,40 +40,22 @@ public class GenericHttpJsonRequest {
             String text = "";
             if (error instanceof TimeoutError) {
                 //text = "RecoverAccount: The Internet has timeout errors";
-                text = SharedMethods.strLu(
-                        "Eghr001 internetTimeouterror",
-                        "The Internet has timeout errors",
-                        "This message will be displayed to the user when connection has timed out");
+                text = SharedMethods.gaStr( "Eghr001 internetTimeouterror" );
             }else if (error instanceof NoConnectionError){
                 //text = "RecoverAccount: No network Connection";
-                text=SharedMethods.strLu(
-                        "Eghr002 NoInternet",
-                        "No network Connection",
-                        "This message will be shown to the user when there is no network connection");
+                text= SharedMethods.gaStr( "Eghr002 NoInternet" );
             }else if (error instanceof AuthFailureError){
                 //text = "RecoverAccount: Error Authenticating";
-                text=SharedMethods.strLu(
-                        "Eghr003 errorAuthenticating",
-                        "Error Authenticating",
-                        "This message will be shown to the user when there is issue with authentication");
+                text= SharedMethods.gaStr( "Eghr003 errorAuthenticating" );
             }else if (error instanceof ServerError){
                 //text = "RecoverAccount: There is an error on the Server side, please try again later. The system reports this error automatically";
-                text=SharedMethods.strLu(
-                        "Eghr004 serverError",
-                        "There is an error on the Server side, please try again later. The system reports this error automatically",
-                        "This message will be shown to the user when there is issue with server");
+                text= SharedMethods.gaStr("Eghr004 serverError" );
             }else if (error instanceof NetworkError){
                 //text = "RecoverAccount: Please check your internet connection";
-                text=SharedMethods.strLu(
-                        "Eghr005 noInternetconnection",
-                        "Please check your internet connection",
-                        "This message will be shown to the user when there is issue with user internet connection");
+                text= SharedMethods.gaStr( "Eghr005 noInternetconnection" );
             }else {
                 //text = "RecoverAccount: Unexpected error occurred";
-                text=SharedMethods.strLu(
-                        "Eghr006 unexpectedError",
-                        "Unexpected error occurred",
-                        "This message will be shown to the user when there is unexpected error");
+                text= SharedMethods.gaStr( "Eghr006 unexpectedError" );
             }
             System.out.println("GenericHttpJsonRequest.java: Volley.onErrorResponse: "+text);
             // if(TOAST)Toast.makeText(.this,text,Toast.LENGTH_LONG).show();
@@ -235,40 +218,22 @@ public class GenericHttpJsonRequest {
                 String text = "";
                 if (error instanceof TimeoutError) {
                     //text = "RecoverAccount: The Internet has timeout errors";
-                    text = SharedMethods.strLu(
-                            "Eghr007 internetTimeouterror",
-                            "The Internet has timeout errors",
-                            "This message will be displayed to the user when connection has timed out");
+                    text = SharedMethods.gaStr( "Eghr007 internetTimeouterror" );
                 }else if (error instanceof NoConnectionError){
                     //text = "RecoverAccount: No network Connection";
-                    text=SharedMethods.strLu(
-                            "Eghr008 NoInternet",
-                            "No network Connection",
-                            "This message will be shown to the user when there is no network connection");
+                    text= SharedMethods.gaStr("Eghr008 NoInternet" );
                 }else if (error instanceof AuthFailureError){
                     //text = "RecoverAccount: Error Authenticating";
-                    text=SharedMethods.strLu(
-                            "Eghr009 errorAuthenticating",
-                            "Error Authenticating",
-                            "This message will be shown to the user when there is issue with authentication");
+                    text= SharedMethods.gaStr( "Eghr009 errorAuthenticating" );
                 }else if (error instanceof ServerError){
                     //text = "RecoverAccount: There is an error on the Server side, please try again later. The system reports this error automatically";
-                    text=SharedMethods.strLu(
-                            "Eghr010 serverError",
-                            "There is an error on the Server side, please try again later. The system reports this error automatically",
-                            "This message will be shown to the user when there is issue with server");
+                    text= SharedMethods.gaStr("Eghr010 serverError" );
                 }else if (error instanceof NetworkError){
                     //text = "RecoverAccount: Please check your internet connection";
-                    text=SharedMethods.strLu(
-                            "Eghr011 noInternetconnection",
-                            "Please check your internet connection",
-                            "This message will be shown to the user when there is issue with user internet connection");
+                    text= SharedMethods.gaStr( "Eghr011 noInternetconnection" );
                 }else {
                     //text = "RecoverAccount: Unexpected error occurred";
-                    text=SharedMethods.strLu(
-                            "Eghr012 unexpectedError",
-                            "Unexpected error occurred",
-                            "This message will be shown to the user when there is unexpected error");
+                    text= SharedMethods.gaStr( "Eghr012 unexpectedError" );
                 }
 
                 try {
@@ -391,40 +356,22 @@ public class GenericHttpJsonRequest {
                 String text = "";
                 if (error instanceof TimeoutError) {
                     //text = "RecoverAccount: The Internet has timeout errors";
-                    text = SharedMethods.strLu(
-                            "Eghr013 internetTimeouterror",
-                            "The Internet has timeout errors",
-                            "This message will be displayed to the user when connection has timed out");
+                    text = SharedMethods.gaStr( "Eghr013 internetTimeouterror");
                 }else if (error instanceof NoConnectionError){
                     //text = "RecoverAccount: No network Connection";
-                    text=SharedMethods.strLu(
-                            "Eghr014 NoInternet",
-                            "No network Connection",
-                            "This message will be shown to the user when there is no network connection");
+                    text= SharedMethods.gaStr( "Eghr014 NoInternet" );
                 }else if (error instanceof AuthFailureError){
                     //text = "RecoverAccount: Error Authenticating";
-                    text=SharedMethods.strLu(
-                            "Eghr015 errorAuthenticating",
-                            "Error Authenticating",
-                            "This message will be shown to the user when there is issue with authentication");
+                    text=  SharedMethods.gaStr( "Eghr015 errorAuthenticating" );
                 }else if (error instanceof ServerError){
                     //text = "RecoverAccount: There is an error on the Server side, please try again later. The system reports this error automatically";
-                    text=SharedMethods.strLu(
-                            "Eghr016 serverError",
-                            "There is an error on the Server side, please try again later. The system reports this error automatically",
-                            "This message will be shown to the user when there is issue with server");
+                    text= SharedMethods.gaStr( "Eghr016 serverError" );
                 }else if (error instanceof NetworkError){
                     //text = "RecoverAccount: Please check your internet connection";
-                    text=SharedMethods.strLu(
-                            "Eghr017 noInternetconnection",
-                            "Please check your internet connection",
-                            "This message will be shown to the user when there is issue with user internet connection");
+                    text= SharedMethods.gaStr( "Eghr017 noInternetconnection" );
                 }else {
                     //text = "RecoverAccount: Unexpected error occurred";
-                    text=SharedMethods.strLu(
-                            "Eghr018 unexpectedError",
-                            "Unexpected error occurred",
-                            "This message will be shown to the user when there is unexpected error");
+                    text= SharedMethods.gaStr( "Eghr018 unexpectedError" );
                 }
 
                 try {

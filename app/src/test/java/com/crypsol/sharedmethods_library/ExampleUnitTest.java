@@ -1,4 +1,4 @@
-package com.crypsol.sharedmethods_library;
+package com.crypsol.SharedMethodss_library;
 
 import org.junit.Test;
 
