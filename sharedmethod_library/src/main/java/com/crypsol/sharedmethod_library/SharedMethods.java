@@ -102,7 +102,7 @@ public class SharedMethods {
                 text= SharedMethods.gaStr("Esha021 noInternetconnection" );
             }else {
                 //text = "RecoverAccount: Unexpected error occurred";
-                /* text= SharedMethods.gaStr("Esha022 unexpectedError");*/
+                text= SharedMethods.gaStr("Esha022 unexpectedError");
             }
 
         }
