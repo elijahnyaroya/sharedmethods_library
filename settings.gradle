@@ -1,3 +1,4 @@
-include ':SharedMethods_library'
+//include ':SharedMethods_library'
+include ':sharedmethod_library'
 include ':app'
-rootProject.name = "SharedMethodss_library"
+rootProject.name = "sharedmethods_library"

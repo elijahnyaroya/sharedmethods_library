@@ -1349,13 +1349,13 @@ public class SharedMethods {
 
         if (SharedMethods.SOP) System.out.println("SharedMethod reportError() Strings from jsonObject describeError1 "+describeError1+ " whatIstheError1 "+ whatIstheError1);
 
-        final com.crypsol.SharedMethods_library.GenericHttpJsonRequest genHttpJSONrequest = new com.crypsol.SharedMethods_library.GenericHttpJsonRequest();
+        final com.crypsol.sharedmethod_library.GenericHttpJsonRequest genHttpJSONrequest = new com.crypsol.sharedmethod_library.GenericHttpJsonRequest();
         JSONObject requestpayment = new JSONObject();
         JSONObject phpMessage;
 
         JSONArray response = null; // initialized to null in case of nothing returned or JSONException...
 
-        com.crypsol.SharedMethods_library.HttpInterface httpInterface = new com.crypsol.SharedMethods_library.HttpInterface() {
+        com.crypsol.sharedmethod_library.HttpInterface httpInterface = new com.crypsol.sharedmethod_library.HttpInterface() {
             @Override
             public void onMyResponse(JSONArray response) {
                 if (SharedMethods.SOP) System.out.println ("SharedMethod.java : ErrorReportingByTheUsers = JSONArray = " + response.toString());
