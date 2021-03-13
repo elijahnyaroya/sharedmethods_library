@@ -3,6 +3,7 @@ package com.crypsol.sharedmethod_library;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Looper;
 import android.view.Gravity;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+
 
 public class SharedMethods {
     private static Context context;
@@ -200,6 +202,23 @@ public class SharedMethods {
         return output;
     }
 
+    // This is a function that is used when one has commented out any piece of code that can cause problems, it will show where the change has been made;
+    // with a toast,system.out.print(), log.d()
+
+    public static void AlertChanges(String message,String changeId){
+        AlertDialog.Builder showChange=  new AlertDialog.Builder(context);
+        showChange.setTitle(SharedMethods.gaStr("Mshm020 show changes"))
+                .setMessage(SharedMethods.gaStr("Mshm022 message")+" :: \n\t"+changeId+"\n "+message)
+                .setCancelable(false)
+                .setPositiveButton(SharedMethods.gaStr("Mshm021 ok"), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create()
+                .show();
+    }
 
     public static void showUserOptionToSelectFromAfetrShaking( final String dashBoardID,  final String showID,  final String imagpathpass,  final String imagepass,final Context context, final String ActivityFrom,final int messagetodeveloper_alert) {
         class MyInteger {
@@ -265,7 +284,8 @@ public class SharedMethods {
      * @param typeOfReporting
      */
     public static void reportError(final String dashBoardID,  final String showID,  final String imagpathpass,  final String imagepass,final String activityfrom, final Context context,final String typeOfReporting) {
-        if(TOAST) Toast.makeText(context, activityfrom + ":\r\n" + typeOfReporting, Toast.LENGTH_LONG).show();
+        if (TOAST)
+            Toast.makeText(context, activityfrom + ":\r\n" + typeOfReporting, Toast.LENGTH_LONG).show();
         // TODO 212 Implementing error reporting, here we will also store back to the database, such that we have a chance, from a central position
         //  to log and find errors occurring on all devices, for us to capture problems early.
         // TODO 235 We will create a central repository of these errors, where we will number them, and feed back
@@ -309,29 +329,30 @@ public class SharedMethods {
         //**************************/
         //final Context context, final String title, String textfieldHint,String textView
 
-        String whatIstheError = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm003 error title1"), SharedMethods.gaStr("Mshm004 error reporting edittext hint"), SharedMethods.gaStr("Mshm005 error reporting textview Text"),true);
-        String describeError = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm006 error title2"), SharedMethods.gaStr("Mshm007 edittext hint"), SharedMethods.gaStr("Mshm008 TextView text"),true);
-        String giveaReasonWhyitsAnerror = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm009 error title 3"), SharedMethods.gaStr("Mshm010 reporting error EditText hint"), SharedMethods.gaStr("Mshm011 TextView text"),true);
-        String howshoulditBedone = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm012 error title 4"), SharedMethods.gaStr("Mshm013 error reporting hind"), SharedMethods.gaStr("Mshm014 error reportint text"),true);
 
-
+        String whatIstheError = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm003 error title1"), SharedMethods.gaStr("Mshm004 error reporting edittext hint"), SharedMethods.gaStr("Mshm005 error reporting textview Text"), true);
+        String describeError = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm006 error title2"), SharedMethods.gaStr("Mshm007 edittext hint"), SharedMethods.gaStr("Mshm008 TextView text"), true);
+        String  giveaReasonWhyitsAnerror = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm009 error title 3"), SharedMethods.gaStr("Mshm010 reporting error EditText hint"), SharedMethods.gaStr("Mshm011 TextView text"),true);
+        String howshoulditBedone = modalTextFieldDialog(context, SharedMethods.gaStr("Mshm012 error title 4"), SharedMethods.gaStr("Mshm013 error reporting hind"), SharedMethods.gaStr("Mshm014 error reportint text"), true);
 
         JSONObject jsonAnswer = new JSONObject();
         try {
             jsonAnswer.put("whatIstheError",whatIstheError);
-            jsonAnswer.put("describeError",describeError);
             jsonAnswer.put("giveaReasonWhyitsAnerror",giveaReasonWhyitsAnerror);
             jsonAnswer.put("howshoulditBedone",howshoulditBedone);
+            jsonAnswer.put("describeError",describeError);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if(SOP)System.out.println("SharedMethod reportError() ANSWER ERROR REPORTING "+jsonAnswer);
+        System.out.println("SharedMethod reportError() ANSWER ERROR REPORTING "+jsonAnswer);
 
         if (jsonAnswer.length()<1){
 
         }else{
-            ErrorReportingByTheUsers(dashBoardID,showID,imagpathpass,imagepass, activityfrom, context, typeOfReporting,jsonAnswer);
+            ErrorReportingByTheUsers(dashBoardID, showID, imagpathpass, imagepass, activityfrom, context, typeOfReporting, jsonAnswer);
+
         }
 
     }
@@ -687,7 +708,7 @@ public class SharedMethods {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.cancel();
                                                 dialog.dismiss();
-                                                //((Create3) context).onCreate3(); // This ought being the call back now to complete after language...
+                                                ((Create3) context).onCreate3(); // This ought being the call back now to complete after language...
                                             }
                                         })
                                         .setCancelable(true)
@@ -925,27 +946,25 @@ public class SharedMethods {
                             e.printStackTrace();
                         }
                     }
-                }).setNegativeButton(
-                        SharedMethods.gaStr("Ishm019 cancel"),
-                        new
-                                DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mymy.clear();
-                                        synchronized (mymy) {
-                                            mymy.notify();
-                                        }
-                                    }
-                                }).setPositiveButton(
-                        SharedMethods.gaStr("Ishm020 Ok"), new
-                                DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        synchronized (mymy) {
-                                            mymy.notify();
-                                        }
-                                    }
-                                }).setCancelable(false);
+                }).setNegativeButton(SharedMethods.gaStr("Ishm019 cancel"), new
+                        DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mymy.clear();
+                                synchronized (mymy) {
+                                    mymy.notify();
+                                }
+                            }
+                        }).setPositiveButton(SharedMethods.gaStr("Ishm020 Ok"), new
+                        DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                synchronized (mymy) {
+                                    mymy.notify();
+                                }
+                            }
+                        }).setCancelable(false);
                 Looper.prepare(); // TODO 800 check up on the looper problem occurring today 08 Nov 2020
                 mBuilder.create();
                 mBuilder.show();
@@ -1250,14 +1269,20 @@ public class SharedMethods {
 
         class MyInteger {
             String myInt;
+
+
             public void set(String i) {
                 myInt = i;
             }
+
             public String get() {
                 return myInt;
             }
+
+
         }
         final MyInteger mymy = new MyInteger();
+
 
         Thread t = new Thread() {
             public void run() {
@@ -1293,22 +1318,26 @@ public class SharedMethods {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //TODO when cancelled we clear stored data in shared preference
+
+                                dialog.dismiss();
                                 synchronized (mymy) {
                                     mymy.notify();
                                 }
                             }
-                        }).setPositiveButton(SharedMethods.gaStr("Ishm012 Ok" ), new
+                        }).setPositiveButton(SharedMethods.gaStr("Ishm012 Ok"), new
                         DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 final String errordata = errorTextField.getText().toString().trim();
                                 // mymy.set(which);
-                                if (acceptEmptyTextFormField==true && !errordata.isEmpty() ){
+
+                                if (acceptEmptyTextFormField == true && !errordata.isEmpty()) {
 
                                     mymy.set(errordata);
-                                }else if(acceptEmptyTextFormField==false && errordata.isEmpty() ){
+                                } else if (acceptEmptyTextFormField == false && errordata.isEmpty()) {
                                     mymy.set(errordata);
-                                    modalTextFieldDialog(context,title,textfieldHint,textView,acceptEmptyTextFormField);
+                                    modalTextFieldDialog(context, title, textfieldHint, textView, acceptEmptyTextFormField);
                                 }
                                 synchronized (mymy) {
                                     mymy.notify();
@@ -1318,9 +1347,11 @@ public class SharedMethods {
                 Looper.prepare(); // TODO 800 check up on the looper problem occurring today 08 Nov 2020
                 mBuilder.create();
                 mBuilder.show();
+
                 Looper.loop();
             }
         };
+
         t.start();
         synchronized (mymy) {
             try {
@@ -1350,13 +1381,13 @@ public class SharedMethods {
 
         if (SharedMethods.SOP) System.out.println("SharedMethod reportError() Strings from jsonObject describeError1 "+describeError1+ " whatIstheError1 "+ whatIstheError1);
 
-        final com.crypsol.sharedmethod_library.GenericHttpJsonRequest genHttpJSONrequest = new com.crypsol.sharedmethod_library.GenericHttpJsonRequest();
+        final GenericHttpJsonRequest genHttpJSONrequest = new GenericHttpJsonRequest();
         JSONObject requestpayment = new JSONObject();
         JSONObject phpMessage;
 
         JSONArray response = null; // initialized to null in case of nothing returned or JSONException...
 
-        com.crypsol.sharedmethod_library.HttpInterface httpInterface = new com.crypsol.sharedmethod_library.HttpInterface() {
+        HttpInterface httpInterface = new HttpInterface() {
             @Override
             public void onMyResponse(JSONArray response) {
                 if (SharedMethods.SOP) System.out.println ("SharedMethod.java : ErrorReportingByTheUsers = JSONArray = " + response.toString());
@@ -1480,7 +1511,11 @@ public class SharedMethods {
         return SessionManager.getTOAST().equals("1");
     }
 
+    public static boolean checkInternetConnection() {
+        ConnectivityManager checkconnection = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        return checkconnection.getActiveNetworkInfo() != null && checkconnection.getActiveNetworkInfo().isConnected();
+    }
 
 
 
@@ -1614,12 +1649,16 @@ public class SharedMethods {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             String serverCRC32 = jsonObject.getString("CRC32");
-                            String sharepreCRC = SessionManager.getAppString().getString("CRC32");
+                            if (SessionManager.getAppString()!=null) {
+                                String sharepreCRC = SessionManager.getAppString().getString("CRC32");
 
-                            if (serverCRC32.equals(sharepreCRC)){
-                                // we do not load app string from the server
+                                if (serverCRC32.equals(sharepreCRC)) {
+                                    // we do not load app string from the server
+                                } else {
+                                    //updating shared preference
+                                    SessionManager.setAppString(jsonObject);
+                                }
                             }else{
-                                //updating shared preference
                                 SessionManager.setAppString(jsonObject);
                             }
 
@@ -1642,9 +1681,12 @@ public class SharedMethods {
             }
         };
 
-        mRequestQueue.add(request2);
+        if (checkInternetConnection()) {
+            mRequestQueue.add(request2);
+        }
         try {
-            return  SessionManager.getAppString().getString(stringID);
+
+            return  SessionManager.getAppString()!=null?SessionManager.getAppString().getString(stringID):stringID;
         } catch (JSONException e) {
             e.printStackTrace();
             return stringID;
