@@ -48,6 +48,12 @@ import java.util.Random;
 
 
 public class SharedMethods {
+    public interface Create3 {
+        public void onCreate3();
+        public void onCreateAfterLanguages();
+    }
+
+
     private static Context context;
     private static int editTextstyling;
     private static int btnSubmit;
