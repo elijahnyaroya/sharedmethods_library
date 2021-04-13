@@ -784,7 +784,8 @@ public class SharedMethods {
                                 countryandlanguage.add(state + " " + lang);
                             }
 
-                            countryandlanguage.add(SessionManager.getPhoneDefaultLnaguage());
+                            // adding default phone language to the database listed languages to be shown to the user for selection
+                            countryandlanguage.add(0,SessionManager.getPhoneDefaultLnaguage());
 
                             String languagename = Locale.getDefault().toLanguageTag();
                             String country = Locale.getDefault().getCountry();
