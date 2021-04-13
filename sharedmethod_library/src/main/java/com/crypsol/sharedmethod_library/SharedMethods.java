@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.crypsol.sessionmanager_library.SessionManager;
+import com.crypsol.sessionmanager_library.SharedMethods_libs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -604,6 +605,7 @@ public class SharedMethods {
     public static void showCountryLanguageAlertDialog(List<String> countryandlanguage, final RequestQueue mRequestQueue, final Context context, final List<String> countryandCurrency) {
 
         if(SOP)System.out.println("SharedMethod.java showCountryLanguageAlertDialog() list of country currency "+countryandCurrency);
+
         final String[] country_lang_toselectFrom = countryandlanguage.toArray(new String[0]);
         final boolean[] checkedItems = new boolean[country_lang_toselectFrom.length];
         AlertDialog.Builder mBuilder;
@@ -781,6 +783,8 @@ public class SharedMethods {
                                 String state = hit.getString("state");
                                 countryandlanguage.add(state + " " + lang);
                             }
+
+                            countryandlanguage.add(SessionManager.getPhoneDefaultLnaguage());
 
                             String languagename = Locale.getDefault().toLanguageTag();
                             String country = Locale.getDefault().getCountry();
